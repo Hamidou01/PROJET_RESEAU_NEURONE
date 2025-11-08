@@ -34,3 +34,11 @@ Ce projet compare deux pipelines de classification d'images pour le jeu de donn√
 python -m venv venv
 source venv/bin/activate   # Windows: venv\Scripts\activate
 pip install -r requirements.txt
+
+
+# Pour lancer API
+uvicorn api.app:app --reload --port 8000
+
+# pour lancer le web ou client
+Aller sur dossier web
+taper  python -m http.server 8088 (vous pouvez changer de port 8088 si ce port est utiliser deja)
