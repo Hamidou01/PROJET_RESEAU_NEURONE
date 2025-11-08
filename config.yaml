@@ -1,0 +1,30 @@
+paths:
+  data_raw: "data/raw"
+  data_processed: "data/processed"
+  models_classical: "models/classical"
+  models_transfer: "models/transfer"
+  models_cnn: "models/cnn"
+  reports: "models/reports"
+
+preprocessing:
+  image_size: 224
+  normalize_mean: [0.485, 0.456, 0.406]
+  normalize_std: [0.229, 0.224, 0.225]
+  val_split: 0.2
+  test_split: 0.2
+
+features:
+  backbones: ["vgg16", "alexnet", "inceptionv3"]
+  batch_size: 16
+
+classical:
+  knn_n_neighbors: 5
+  svm_kernel: "rbf"
+
+transfer:
+  backbone: "resnet18"
+  epochs: 12
+  batch_size: 32
+  lr: 0.001
+
+seed: 42

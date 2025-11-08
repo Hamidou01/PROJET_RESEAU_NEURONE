@@ -1,0 +1,33 @@
+from fastapi import FastAPI, File, UploadFile
+from PIL import Image
+import io
+import torch
+import torchvision.models as models
+from torchvision.models import ResNet18_Weights
+from src.utils.helpers import load_config
+from src.utils.dataset import ImageFolderDataset
+from api.services.inference import TransferInference
+
+app = FastAPI()
+
+@app.get("/")
+def root():
+    return {"message": "API ready"}
+
+# Load model on startup (resnet18 example)
+cfg = load_config()
+dataset = ImageFolderDataset(cfg["paths"]["data_raw"])  # to get class mapping
+num_classes = len(dataset.class_to_idx)
+model = models.resnet18(weights=ResNet18_Weights.DEFAULT)
+model.fc = torch.nn.Linear(model.fc.in_features, num_classes)
+state_path = f"{cfg['paths']['models_transfer']}/resnet18_{num_classes}classes.pth"
+model.load_state_dict(torch.load(state_path, map_location="cpu"))
+
+service = TransferInference(model, dataset.class_to_idx)
+
+@app.post("/predict")
+async def predict(file: UploadFile = File(...)):
+    content = await file.read()
+    image = Image.open(io.BytesIO(content)).convert("RGB")
+    pred = service.predict(image)
+    return {"predicted_class": pred}
